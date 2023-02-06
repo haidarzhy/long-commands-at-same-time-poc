@@ -2,9 +2,7 @@
 
 namespace App\Console;
 
-use App\Console\Commands\FirstLongCommand;
-use App\Console\Commands\SecondLongCommand;
-use App\Console\Commands\ThirdLongCommand;
+use App\Console\Commands\CounterCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -18,9 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(FirstLongCommand::class)->everyFifteenMinutes();
-        $schedule->command(SecondLongCommand::class)->everyFifteenMinutes();
-        $schedule->command(ThirdLongCommand::class)->everyFifteenMinutes();
+        $schedule->command(CounterCommand::class)->everyMinute();
     }
 
     /**

@@ -1,0 +1,15 @@
+# For more information: https://laravel.com/docs/sail
+version: '3'
+services:
+    laravel:
+        build: .
+        volumes:
+            - './storage/logs:/usr/src/myapp/storage/logs'
+        networks:
+            - bridge
+networks:
+    bridge:
+        driver: bridge
+volumes:
+    logs:
+        driver: local
