@@ -1,34 +1,43 @@
-Result: if we have long commads scheduled for the same time they will work one after each other even if time changed by the moment previous command finished.
+Result: if we run schedule:work via docker we don't trap signals. When running without docker we see it in logs
 
-
-Kernel
+Without docker
 ```
-    protected function schedule(Schedule $schedule)
-    {
-        $schedule->command(FirstLongCommand::class)->everyFifteenMinutes();
-        $schedule->command(SecondLongCommand::class)->everyFifteenMinutes();
-        $schedule->command(ThirdLongCommand::class)->everyFifteenMinutes();
-    }
+php artisan schedule:work
+CTRL+C
 ```
 
-Command
+Log:
 ```
-    public function handle()
-    {
-        Log::info('First command started at ' . Carbon::now()->toDateTimeString());
-        sleep(120);
-        Log::info('First command finished at ' . Carbon::now()->toDateTimeString());
+[2023-02-06 13:57:00] local.INFO: MAIN 1  
+[2023-02-06 13:57:01] local.INFO: MAIN 2  
+[2023-02-06 13:57:02] local.INFO: MAIN 3  
+[2023-02-06 13:57:03] local.INFO: MAIN 4  
+[2023-02-06 13:57:03] local.INFO: SIGNAL 2 1  
+[2023-02-06 13:57:04] local.INFO: SIGNAL 2 2  
+[2023-02-06 13:57:05] local.INFO: SIGNAL 2 3  
+[2023-02-06 13:57:06] local.INFO: SIGNAL 2 4  
+[2023-02-06 13:57:07] local.INFO: SIGNAL 2 5  
+[2023-02-06 13:57:08] local.INFO: MAIN 5  
+[2023-02-06 13:57:09] local.INFO: MAIN 6  
+[2023-02-06 13:57:10] local.INFO: MAIN 7  
+[2023-02-06 13:57:11] local.INFO: MAIN 8  
+[2023-02-06 13:57:12] local.INFO: MAIN 9  
+```
 
-        return Command::SUCCESS;
-    }
+With docker
 ```
-
-Result
+docker compose up
+CTRL+C
 ```
-[2023-02-01 14:00:00] local.INFO: First command started at 2023-02-01 14:00:00  
-[2023-02-01 14:02:00] local.INFO: First command finished at 2023-02-01 14:02:00  
-[2023-02-01 14:02:00] local.INFO: Second command started at 2023-02-01 14:02:00  
-[2023-02-01 14:04:00] local.INFO: Second command finished at 2023-02-01 14:04:00  
-[2023-02-01 14:04:00] local.INFO: Third command started at 2023-02-01 14:04:00  
-[2023-02-01 14:06:00] local.INFO: Third command finished at 2023-02-01 14:06:00  
+Result without
+```
+[2023-02-06 13:57:00] local.INFO: MAIN 1  
+[2023-02-06 13:57:01] local.INFO: MAIN 2  
+[2023-02-06 13:57:02] local.INFO: MAIN 3  
+[2023-02-06 13:57:03] local.INFO: MAIN 4  
+[2023-02-06 13:57:03] local.INFO: MAIN 5  
+[2023-02-06 13:57:04] local.INFO: MAIN 6 
+[2023-02-06 13:57:05] local.INFO: MAIN 7 
+[2023-02-06 13:57:06] local.INFO: MAIN 8  
+[2023-02-06 13:57:07] local.INFO: MAIN 9  
 ```
